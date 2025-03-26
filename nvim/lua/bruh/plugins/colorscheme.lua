@@ -1,45 +1,43 @@
+-- ... this file is filled with pain
+
 return {
-  "folke/tokyonight.nvim",
-  priority = 1000,
-  config = function()
-    local transparent = false -- set to true if you would like to enable transparency
-
-    local bg = "#011628"
-    local bg_dark = "#011423"
-    local bg_highlight = "#143652"
-    local bg_search = "#0A64AC"
-    local bg_visual = "#275378"
-    local fg = "#CBE0F0"
-    local fg_dark = "#B4D0E9"
-    local fg_gutter = "#627E97"
-    local border = "#547998"
-
-    require("tokyonight").setup({
-      style = "night",
-      transparent = transparent,
-      styles = {
-        sidebars = transparent and "transparent" or "dark",
-        floats = transparent and "transparent" or "dark",
-      },
-      on_colors = function(colors)
-        colors.bg = bg
-        colors.bg_dark = transparent and colors.none or bg_dark
-        colors.bg_float = transparent and colors.none or bg_dark
-        colors.bg_highlight = bg_highlight
-        colors.bg_popup = bg_dark
-        colors.bg_search = bg_search
-        colors.bg_sidebar = transparent and colors.none or bg_dark
-        colors.bg_statusline = transparent and colors.none or bg_dark
-        colors.bg_visual = bg_visual
-        colors.border = border
-        colors.fg = fg
-        colors.fg_dark = fg_dark
-        colors.fg_float = fg
-        colors.fg_gutter = fg_gutter
-        colors.fg_sidebar = fg_dark
-      end,
-    })
-
-    vim.cmd("colorscheme tokyonight")
-  end,
+	{
+		lazy = false,
+		priority = 1000,
+		"tjdevries/colorbuddy.nvim",
+		config = function()
+			vim.cmd.colorscheme("catppuccin")
+		end,
+	},
+	"rktjmp/lush.nvim",
+	"tckmn/hotdog.vim",
+	"dundargoc/fakedonalds.nvim",
+	"craftzdog/solarized-osaka.nvim",
+	{ "rose-pine/neovim", name = "rose-pine" },
+	"eldritch-theme/eldritch.nvim",
+	"jesseleite/nvim-noirbuddy",
+	"miikanissi/modus-themes.nvim",
+	"rebelot/kanagawa.nvim",
+	"gremble0/yellowbeans.nvim",
+	"rockyzhang24/arctic.nvim",
+	"folke/tokyonight.nvim",
+	"Shatur/neovim-ayu",
+	"RRethy/base16-nvim",
+	"xero/miasma.nvim",
+	"cocopon/iceberg.vim",
+	"kepano/flexoki-neovim",
+	"ntk148v/komau.vim",
+	{ "catppuccin/nvim", name = "catppuccin" },
+	"uloco/bluloco.nvim",
+	"LuRsT/austere.vim",
+	"ricardoraposo/gruvbox-minor.nvim",
+	"NTBBloodbath/sweetie.nvim",
+	"vim-scripts/MountainDew.vim",
+	{
+		"maxmx03/fluoromachine.nvim",
+		-- config = function()
+		--   local fm = require "fluoromachine"
+		--   fm.setup { glow = true, theme = "fluoromachine" }
+		-- end,
+	},
 }

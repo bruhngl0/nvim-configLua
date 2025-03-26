@@ -1,54 +1,143 @@
 return {
-	"williamboman/mason.nvim",
-	dependencies = {
-		"williamboman/mason-lspconfig.nvim",
-		"WhoIsSethDaniel/mason-tool-installer.nvim",
-	},
-	config = function()
-		-- import mason
-		local mason = require("mason")
-
-		-- import mason-lspconfig
-		local mason_lspconfig = require("mason-lspconfig")
-
-		local mason_tool_installer = require("mason-tool-installer")
-
-		-- enable mason and configure icons
-		mason.setup({
-			ui = {
-				icons = {
-					package_installed = "✓",
-					package_pending = "➜",
-					package_uninstalled = "✗",
+	{
+		"neovim/nvim-lspconfig",
+		dependencies = {
+			{
+				"folke/lazydev.nvim",
+				ft = "lua",
+				opts = {
+					library = {
+						{ path = "luvit-meta/library", words = { "vim%.uv" } },
+						{ path = "/usr/share/awesome/lib/", words = { "awesome" } },
+					},
 				},
 			},
-		})
+			{ "Bilal2453/luvit-meta", lazy = true },
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
+			{ "j-hui/fidget.nvim", opts = {} },
+			{ "https://git.sr.ht/~whynothugo/lsp_lines.nvim" },
+			{ "elixir-tools/elixir-tools.nvim" },
+			"stevearc/conform.nvim",
+			"b0o/SchemaStore.nvim",
+		},
+		config = function()
+			if vim.g.obsidian then
+				return
+			end
 
-		mason_lspconfig.setup({
-			-- list of servers for mason to install
-			ensure_installed = {
+			local capabilities = nil
+			if pcall(require, "cmp_nvim_lsp") then
+				capabilities = require("cmp_nvim_lsp").default_capabilities()
+			end
 
-				"html",
-				"cssls",
-				"tailwindcss",
-				"svelte",
-				"lua_ls",
-				"graphql",
-				"emmet_ls",
-				"prismals",
-				"pyright",
-			},
-		})
+			local lspconfig = require("lspconfig")
 
-		mason_tool_installer.setup({
-			ensure_installed = {
-				"prettier", -- prettier formatter
-				"stylua", -- lua formatter
-				"isort", -- python formatter
-				"black", -- python formatter
-				"pylint",
-				"eslint_d",
-			},
-		})
-	end,
+			local servers = {
+				bashls = true,
+				gopls = {
+					manual_install = true,
+					settings = {
+						gopls = {
+							hints = {
+								assignVariableTypes = true,
+								compositeLiteralFields = true,
+								compositeLiteralTypes = true,
+								constantValues = true,
+								functionTypeParameters = true,
+								parameterNames = true,
+								rangeVariableTypes = true,
+							},
+						},
+					},
+				},
+				lua_ls = {
+					server_capabilities = { semanticTokensProvider = vim.NIL },
+				},
+				rust_analyzer = true,
+				svelte = true,
+				templ = true,
+				taplo = true,
+				intelephense = true,
+				pyright = true,
+				ruff = { manual_install = true },
+				biome = true,
+				vtsls = {
+					server_capabilities = { documentFormattingProvider = false },
+				},
+				jsonls = {
+					server_capabilities = { documentFormattingProvider = false },
+					settings = {
+						json = {
+							schemas = require("schemastore").json.schemas(),
+							validate = { enable = true },
+						},
+					},
+				},
+				yamlls = {
+					settings = { yaml = { schemaStore = { enable = false, url = "" } } },
+				},
+				ols = {},
+				racket_langserver = { manual_install = true },
+				roc_ls = { manual_install = true },
+				gleam = { manual_install = true },
+				lexical = {
+					cmd = { "/home/tjdevries/.local/share/nvim/mason/bin/lexical", "server" },
+					root_dir = require("lspconfig.util").root_pattern({ "mix.exs" }),
+					server_capabilities = { completionProvider = vim.NIL, definitionProvider = true },
+				},
+				clangd = {
+					init_options = { clangdFileStatus = true },
+					filetypes = { "c" },
+				},
+				tailwindcss = {
+					init_options = {
+						userLanguages = { elixir = "phoenix-heex", eruby = "erb", heex = "phoenix-heex" },
+					},
+					settings = {
+						tailwindCSS = {
+							experimental = {
+								classRegex = { [[class: "([^"]*)]], [[className="([^"]*)]] },
+							},
+						},
+					},
+				},
+			}
+
+			local servers_to_install = vim.tbl_filter(function(key)
+				local t = servers[key]
+				if type(t) == "table" then
+					return not t.manual_install
+				else
+					return t
+				end
+			end, vim.tbl_keys(servers))
+
+			require("mason").setup()
+			local ensure_installed = { "stylua", "lua_ls", "delve" }
+			vim.list_extend(ensure_installed, servers_to_install)
+			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+
+			for name, config in pairs(servers) do
+				if config == true then
+					config = {}
+				end
+				config = vim.tbl_deep_extend("force", {}, { capabilities = capabilities }, config)
+				lspconfig[name].setup(config)
+			end
+
+			require("lsp_lines").setup()
+			vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
+
+			vim.keymap.set("", "<leader>l", function()
+				local config = vim.diagnostic.config() or {}
+				if config.virtual_text then
+					vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
+				else
+					vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
+				end
+			end, { desc = "Toggle lsp_lines" })
+		end,
+	},
 }
