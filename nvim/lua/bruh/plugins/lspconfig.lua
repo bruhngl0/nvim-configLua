@@ -14,6 +14,8 @@ return {
 			},
 			{ "Bilal2453/luvit-meta", lazy = true },
 			"williamboman/mason.nvim",
+			"hrsh7th/nvim-cmp",
+			"hrsh7th/cmp-nvim-lsp",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			{ "j-hui/fidget.nvim", opts = {} },
@@ -27,12 +29,14 @@ return {
 				return
 			end
 
-			local capabilities = nil
-			if pcall(require, "cmp_nvim_lsp") then
-				capabilities = require("cmp_nvim_lsp").default_capabilities()
-			end
-
 			local lspconfig = require("lspconfig")
+			local cmp_nvim_lsp = require("cmp_nvim_lsp")
+
+			local capabilities = vim.tbl_deep_extend(
+				"force",
+				vim.lsp.protocol.make_client_capabilities(),
+				cmp_nvim_lsp.default_capabilities()
+			)
 
 			local servers = {
 				bashls = true,
@@ -123,7 +127,7 @@ return {
 				if config == true then
 					config = {}
 				end
-				config = vim.tbl_deep_extend("force", {}, { capabilities = capabilities }, config)
+				config.capabilities = vim.tbl_deep_extend("force", capabilities, config.capabilities or {})
 				lspconfig[name].setup(config)
 			end
 
