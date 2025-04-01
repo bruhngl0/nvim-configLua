@@ -1,5 +1,3 @@
--- ... this file is filled with pain
-
 return {
 	{
 		lazy = false,
@@ -13,7 +11,18 @@ return {
 	"tckmn/hotdog.vim",
 	"dundargoc/fakedonalds.nvim",
 	"craftzdog/solarized-osaka.nvim",
-	{ "rose-pine/neovim", name = "rose-pine" },
+	{
+		"rose-pine/neovim",
+		name = "rose-pine",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("rose-pine").setup({
+				variant = "dawn", -- light theme
+			})
+			vim.cmd.colorscheme("rose-pine")
+		end,
+	},
 	"eldritch-theme/eldritch.nvim",
 	"jesseleite/nvim-noirbuddy",
 	"miikanissi/modus-themes.nvim",
@@ -33,6 +42,7 @@ return {
 	"ricardoraposo/gruvbox-minor.nvim",
 	"NTBBloodbath/sweetie.nvim",
 	"vim-scripts/MountainDew.vim",
+	"NLKNguyen/papercolor-theme", -- ← fixed here
 	{
 		"maxmx03/fluoromachine.nvim",
 		-- config = function()

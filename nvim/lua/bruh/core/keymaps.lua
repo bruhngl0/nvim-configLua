@@ -20,3 +20,10 @@ keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" 
 keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" }) --  go to next tab
 keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
 keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
+
+-- LSP keymaps
+keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover documentation" })
+keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
+keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
+keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
