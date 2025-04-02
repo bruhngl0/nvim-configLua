@@ -22,6 +22,7 @@ return {
 		end,
 	},
 	"eldritch-theme/eldritch.nvim",
+	"ellisonleao/gruvbox.nvim",
 	"jesseleite/nvim-noirbuddy",
 	"miikanissi/modus-themes.nvim",
 	"rebelot/kanagawa.nvim",
