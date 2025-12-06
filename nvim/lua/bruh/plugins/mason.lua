@@ -13,12 +13,8 @@ return {
 		"hrsh7th/vim-vsnip",
 	},
 	config = function()
-		-- Setup Mason
-		local mason = require("mason")
-		local mason_lspconfig = require("mason-lspconfig")
-		local mason_tool_installer = require("mason-tool-installer")
-
-		mason.setup({
+		-- 1) Mason core
+		require("mason").setup({
 			ui = {
 				icons = {
 					package_installed = "✓",
@@ -28,7 +24,9 @@ return {
 			},
 		})
 
-		mason_lspconfig.setup({
+		-- 2) mason-lspconfig: install & hook into lspconfig via handlers
+		local mlc = require("mason-lspconfig")
+		mlc.setup({
 			ensure_installed = {
 				"html",
 				"cssls",
@@ -40,9 +38,21 @@ return {
 				"prismals",
 				"pyright",
 			},
+			automatic_installation = true, -- install if missing
+		})
+		-- this replaces the old automatic_enable feature
+		mlc.setup_handlers({
+			-- default handler for all servers
+			function(server_name)
+				require("lspconfig")[server_name].setup({
+					capabilities = require("cmp_nvim_lsp").default_capabilities(),
+				})
+			end,
+			-- (you can add server-specific overrides here)
 		})
 
-		mason_tool_installer.setup({
+		-- 3) mason-tool-installer
+		require("mason-tool-installer").setup({
 			ensure_installed = {
 				"prettier",
 				"stylua",
@@ -53,7 +63,7 @@ return {
 			},
 		})
 
-		-- Setup nvim-cmp
+		-- 4) nvim-cmp
 		local cmp = require("cmp")
 		cmp.setup({
 			snippet = {
@@ -72,27 +82,5 @@ return {
 				{ name = "buffer" },
 			}),
 		})
-
-		-- Attach cmp capabilities to all LSPs
-		local capabilities = require("cmp_nvim_lsp").default_capabilities()
-		local lspconfig = require("lspconfig")
-
-		local servers = {
-			"html",
-			"cssls",
-			"tailwindcss",
-			"svelte",
-			"lua_ls",
-			"graphql",
-			"emmet_ls",
-			"prismals",
-			"pyright",
-		}
-
-		for _, server in ipairs(servers) do
-			lspconfig[server].setup({
-				capabilities = capabilities,
-			})
-		end
 	end,
 }

@@ -38,10 +38,15 @@ return {
 	{ "catppuccin/nvim", name = "catppuccin" },
 	"uloco/bluloco.nvim",
 	"LuRsT/austere.vim",
-	"ricardoraposo/gruvbox-minor.nvim",
-	"NTBBloodbath/sweetie.nvim",
+
 	"vim-scripts/MountainDew.vim",
-	"NLKNguyen/papercolor-theme", -- ← fixed here
+	{
+		"NLKNguyen/papercolor-theme",
+		lazy = false,
+		config = function()
+			vim.g.papercolor_variant = "light"
+		end,
+	},
 	{
 		"maxmx03/fluoromachine.nvim",
 		-- config = function()
