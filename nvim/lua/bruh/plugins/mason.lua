@@ -466,6 +466,7 @@ return {
 		end, vim.tbl_keys(servers))
 
 		-- Setup Mason
+		-- Setup Mason
 		require("mason").setup({
 			ui = {
 				border = "rounded",
@@ -477,7 +478,12 @@ return {
 			},
 		})
 
-		-- Setup Mason LSP config
+		-- CRITICAL FIX: Patch the broken automatic_enable module BEFORE requiring mason-lspconfig
+		package.preload["mason-lspconfig.features.automatic_enable"] = function()
+			return { init = function() end }
+		end
+
+		-- Now setup Mason LSP config
 		require("mason-lspconfig").setup({
 			ensure_installed = vim.list_extend(
 				{ "lua_ls" },
@@ -485,7 +491,6 @@ return {
 					return servers[server] and not (type(servers[server]) == "table" and servers[server].manual_install)
 				end, servers_to_install)
 			),
-			automatic_installation = true,
 		})
 
 		-- Setup Mason tool installer
@@ -509,7 +514,6 @@ return {
 			lspconfig[name].setup(config)
 		end
 
-		-- Setup lsp_lines plugin (show diagnostics as virtual lines)
 		require("lsp_lines").setup()
 
 		-- Keymap to toggle between virtual_text and virtual_lines
